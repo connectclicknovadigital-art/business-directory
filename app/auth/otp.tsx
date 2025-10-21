@@ -168,9 +168,6 @@ export default function OTPScreen() {
             {loading ? 'Verifying...' : 'Verify'}
           </Text>
         </TouchableOpacity>
-
-        <Text style={styles.fromMessages}>From Messages</Text>
-        <Text style={styles.messageCode}>241356</Text>
         </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>

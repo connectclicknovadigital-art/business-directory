@@ -63,7 +63,7 @@ export default function PhoneScreen() {
             <View style={styles.logoIcon}>
               <Text style={styles.logoText}>💬</Text>
             </View>
-            <Text style={styles.appName}>Tolki</Text>
+            <Text style={styles.appName}>Travel</Text>
           </View>
         </View>
 
