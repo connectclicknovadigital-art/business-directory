@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -21,6 +21,10 @@ export default function OTPVerificationScreen() {
   const router = useRouter();
   const { phoneNumber } = useLocalSearchParams();
   const { confirmationResult, setConfirmationResult } = useAuth();
+  
+  // Create refs for each input
+  const otpRefs = useRef([]);
+  otpRefs.current = otpRefs.current.slice(0, 6);
 
   const handleOtpChange = (value, index) => {
     if (value.length <= 1) {
@@ -30,9 +34,15 @@ export default function OTPVerificationScreen() {
 
       // Auto-focus next input
       if (value && index < 5) {
-        const nextInput = `otpInput${index + 1}`;
-        // Focus next input (you'd need refs for this)
+        otpRefs.current[index + 1]?.focus();
       }
+    }
+  };
+
+  const handleKeyPress = (e, index) => {
+    // Handle backspace to go to previous input
+    if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
     }
   };
 
@@ -77,7 +87,7 @@ export default function OTPVerificationScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <StatusBar barStyle="dark-content" backgroundColor="#f8f9ff" />
       <KeyboardAvoidingView 
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -101,16 +111,19 @@ export default function OTPVerificationScreen() {
               {otp.map((digit, index) => (
                 <TextInput
                   key={index}
+                  ref={(ref) => (otpRefs.current[index] = ref)}
                   style={[
                     styles.otpInput,
                     digit ? styles.otpInputFilled : null
                   ]}
                   value={digit}
                   onChangeText={(value) => handleOtpChange(value, index)}
+                  onKeyPress={(e) => handleKeyPress(e, index)}
                   keyboardType="number-pad"
                   maxLength={1}
                   selectTextOnFocus
                   textAlign="center"
+                  autoFocus={index === 0}
                 />
               ))}
             </View>
@@ -146,7 +159,7 @@ export default function OTPVerificationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f9ff',
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -168,12 +181,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#1f2937',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: '#6b7280',
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -191,21 +204,30 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     fontSize: 24,
     fontWeight: '600',
-    color: '#1a1a1a',
-    backgroundColor: '#f8f9fa',
+    color: '#1f2937',
+    backgroundColor: '#ffffff',
+    shadowColor: '#6366f1',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   otpInputFilled: {
-    borderColor: '#007AFF',
+    borderColor: '#6366f1',
     backgroundColor: '#fff',
+    shadowOpacity: 0.2,
   },
   verifyButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#6366f1',
     borderRadius: 12,
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-    shadowColor: '#007AFF',
+    shadowColor: '#6366f1',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -215,7 +237,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   buttonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#d1d5db',
     shadowOpacity: 0,
     elevation: 0,
   },
@@ -231,11 +253,11 @@ const styles = StyleSheet.create({
   },
   resendText: {
     fontSize: 16,
-    color: '#666',
+    color: '#6b7280',
   },
   resendLink: {
     fontSize: 16,
-    color: '#007AFF',
+    color: '#6366f1',
     fontWeight: '600',
   },
 });

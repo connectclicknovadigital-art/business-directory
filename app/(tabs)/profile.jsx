@@ -1,36 +1,34 @@
 import { router } from 'expo-router';
-import { signOut } from 'firebase/auth';
 import {
-    Calendar,
-    Car,
-    ChevronRight,
-    CreditCard,
-    Edit,
-    HelpCircle,
-    LogOut,
-    MapPin,
-    Phone,
-    Settings,
-    Shield,
-    ShoppingBag,
-    Star,
-    User
+  Calendar,
+  Car,
+  ChevronRight,
+  CreditCard,
+  Edit,
+  HelpCircle,
+  LogOut,
+  MapPin,
+  Phone,
+  Settings,
+  Shield,
+  ShoppingBag,
+  Star,
+  User
 } from 'lucide-react-native';
 import {
-    Alert,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { auth } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   // Extract user info (demo data for now)
   const userInfo = {
@@ -56,7 +54,7 @@ const Profile = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await signOut(auth);
+              await logout();
               router.replace('/auth/welcome');
             } catch (error) {
               console.error('Logout error:', error);

@@ -40,7 +40,7 @@ export default function PhoneLoginScreen() {
       // Store confirmation result in context
       setConfirmationResult(confirmation);
 
-      Alert.alert("OTP Sent!", "Check your SMS inbox.");
+      Alert.alert("OTP Sent Successfully!");
       
       // Navigate to OTP screen
       router.push({
@@ -81,7 +81,7 @@ export default function PhoneLoginScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <StatusBar barStyle="dark-content" backgroundColor="#f8f9ff" />
       <KeyboardAvoidingView 
         style={styles.keyboardAvoidingView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -150,7 +150,7 @@ export default function PhoneLoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f9ff',
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -172,13 +172,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#1f2937',
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: '#6b7280',
     textAlign: 'center',
     lineHeight: 24,
     paddingHorizontal: 20,
@@ -189,13 +189,21 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#e1e5e9',
     borderRadius: 12,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#ffffff',
     overflow: 'hidden',
+    shadowColor: '#6366f1',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   countryCode: {
     paddingHorizontal: 16,
     paddingVertical: 18,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#f1f5f9',
     justifyContent: 'center',
     alignItems: 'center',
     borderRightWidth: 1,
@@ -204,7 +212,7 @@ const styles = StyleSheet.create({
   countryCodeText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1a1a1a',
+    color: '#1f2937',
   },
   phoneInput: {
     flex: 1,
@@ -212,17 +220,17 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     fontSize: 18,
     fontWeight: '500',
-    color: '#1a1a1a',
+    color: '#1f2937',
     backgroundColor: '#fff',
   },
   otpButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#6366f1',
     borderRadius: 12,
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-    shadowColor: '#007AFF',
+    shadowColor: '#6366f1',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -232,7 +240,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   buttonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#d1d5db',
     shadowOpacity: 0,
     elevation: 0,
   },
@@ -243,7 +251,7 @@ const styles = StyleSheet.create({
   },
   termsText: {
     fontSize: 14,
-    color: '#888',
+    color: '#6b7280',
     textAlign: 'center',
     lineHeight: 20,
     paddingHorizontal: 20,

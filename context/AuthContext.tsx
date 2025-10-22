@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth } from '../config/firebase';
 
@@ -9,6 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   confirmationResult: any | null;
   setConfirmationResult: (result: any) => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -17,6 +18,7 @@ const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   confirmationResult: null,
   setConfirmationResult: () => {},
+  logout: async () => {},
 });
 
 export const useAuth = () => {
@@ -31,6 +33,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [confirmationResult, setConfirmationResult] = useState<any | null>(null);
+
+  // Initialize user from AsyncStorage on app start
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        const storedUser = await AsyncStorage.getItem('user');
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
+      } catch (error) {
+        console.log('Error loading stored user:', error);
+      }
+    };
+    
+    initializeAuth();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -47,12 +65,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return unsubscribe;
   }, []);
 
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      setConfirmationResult(null);
+      await AsyncStorage.removeItem('user');
+    } catch (error) {
+      console.log('Logout error:', error);
+    }
+  };
+
   const value = {
     user,
     isLoading,
     isAuthenticated: !!user,
     confirmationResult,
     setConfirmationResult,
+    logout,
   };
 
   return (
