@@ -1,17 +1,16 @@
 import { router } from 'expo-router';
-import React from 'react';
 import {
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 export default function WelcomeScreen() {
   const handleGetStarted = () => {
-    router.push('/auth/phone' as any);
+    router.push('/auth/phone');
   };
 
   return (

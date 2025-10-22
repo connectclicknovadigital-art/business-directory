@@ -1,5 +1,6 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+// firebaseConfig.js
+import { initializeApp } from "firebase/app";
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCnb3rSNOTb8aWPc7OXjk_CoLbrzMtK0ls",
@@ -11,10 +12,11 @@ const firebaseConfig = {
   measurementId: "G-82YJ463EQV"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-// Initialize Firebase Auth
-export const auth = getAuth(app);
+// Needed for web-based reCAPTCHA (Expo uses web fallback)
+auth.languageCode = "en";
 
-export default app;
+export { auth, RecaptchaVerifier, signInWithPhoneNumber };
+
