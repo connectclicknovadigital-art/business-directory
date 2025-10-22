@@ -1,0 +1,241 @@
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { useAuth } from '../../context/AuthContext';
+
+export default function OTPVerificationScreen() {
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { phoneNumber } = useLocalSearchParams();
+  const { confirmationResult, setConfirmationResult } = useAuth();
+
+  const handleOtpChange = (value, index) => {
+    if (value.length <= 1) {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+
+      // Auto-focus next input
+      if (value && index < 5) {
+        const nextInput = `otpInput${index + 1}`;
+        // Focus next input (you'd need refs for this)
+      }
+    }
+  };
+
+  const verifyOTP = async () => {
+    try {
+      setLoading(true);
+      const otpCode = otp.join('');
+      
+      if (otpCode.length !== 6) {
+        Alert.alert('Invalid OTP', 'Please enter a 6-digit OTP');
+        return;
+      }
+
+      if (!confirmationResult) {
+        Alert.alert('Error', 'Please request OTP again');
+        router.back();
+        return;
+      }
+
+      await confirmationResult.confirm(otpCode);
+      
+      // Clear confirmation result
+      setConfirmationResult(null);
+      
+      Alert.alert('Success!', 'Phone number verified successfully');
+      router.replace('/(tabs)/home');
+    } catch (error) {
+      console.log('OTP verification error:', error);
+      Alert.alert('Verification Failed', 'Invalid OTP. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resendOTP = () => {
+    router.back();
+  };
+
+  const maskedPhoneNumber = phoneNumber ? 
+    phoneNumber.replace(/(\+\d{2})(\d{4})(\d{4})/, '$1****$3') : 
+    '';
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <KeyboardAvoidingView 
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.content}>
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={styles.title}>Verify OTP</Text>
+              <Text style={styles.subtitle}>
+                Enter the 6-digit code sent to {maskedPhoneNumber}
+              </Text>
+            </View>
+
+            {/* OTP Input */}
+            <View style={styles.otpContainer}>
+              {otp.map((digit, index) => (
+                <TextInput
+                  key={index}
+                  style={[
+                    styles.otpInput,
+                    digit ? styles.otpInputFilled : null
+                  ]}
+                  value={digit}
+                  onChangeText={(value) => handleOtpChange(value, index)}
+                  keyboardType="number-pad"
+                  maxLength={1}
+                  selectTextOnFocus
+                  textAlign="center"
+                />
+              ))}
+            </View>
+
+            {/* Verify Button */}
+            <TouchableOpacity 
+              style={[
+                styles.verifyButton,
+                loading && styles.buttonDisabled
+              ]} 
+              onPress={verifyOTP}
+              disabled={loading}
+            >
+              <Text style={styles.verifyButtonText}>
+                {loading ? 'Verifying...' : 'Verify OTP'}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Resend Option */}
+            <View style={styles.resendContainer}>
+              <Text style={styles.resendText}>Didn't receive the code? </Text>
+              <TouchableOpacity onPress={resendOTP}>
+                <Text style={styles.resendLink}>Resend OTP</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 24,
+    justifyContent: 'center',
+    minHeight: 400,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  otpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 40,
+    paddingHorizontal: 20,
+  },
+  otpInput: {
+    width: 45,
+    height: 55,
+    borderWidth: 2,
+    borderColor: '#e1e5e9',
+    borderRadius: 12,
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    backgroundColor: '#f8f9fa',
+  },
+  otpInputFilled: {
+    borderColor: '#007AFF',
+    backgroundColor: '#fff',
+  },
+  verifyButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    shadowColor: '#007AFF',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  buttonDisabled: {
+    backgroundColor: '#ccc',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  verifyButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  resendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  resendText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  resendLink: {
+    fontSize: 16,
+    color: '#007AFF',
+    fontWeight: '600',
+  },
+});
