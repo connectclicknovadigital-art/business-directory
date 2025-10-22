@@ -13,7 +13,6 @@ export default function PhoneLoginScreen() {
     try {
       const phoneNumberFormatted = phoneNumber.startsWith("+") ? phoneNumber : `+91${phoneNumber}`;
 
-      // This returns a ConfirmationResult object
       const confirmation = await signInWithPhoneNumber(auth, phoneNumberFormatted, recaptchaVerifier.current);
 
       setConfirmationResult(confirmation);
@@ -28,7 +27,6 @@ export default function PhoneLoginScreen() {
     try {
       if (!confirmationResult) return;
 
-      // Use the confirm method of confirmationResult
       await confirmationResult.confirm(otp);
 
       Alert.alert("Login Success!");
@@ -42,6 +40,7 @@ export default function PhoneLoginScreen() {
       <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={auth.app.options}
+        attemptInvisibleVerification={true} // ✅ Invisible reCAPTCHA
       />
 
       <Text style={styles.title}>Phone Number Login</Text>
